@@ -30,6 +30,9 @@ func jsonResult(v any) (*mcp.CallToolResult, error) {
 // apiErrResult turns a seatsaero error into an MCP tool-error result.
 // The Go error return is reserved for transport failures, so we always return nil here.
 func apiErrResult(err error) *mcp.CallToolResult {
+	if err == nil {
+		return mcp.NewToolResultError("unknown error")
+	}
 	var apiErr *seatsaero.APIError
 	if errors.As(err, &apiErr) {
 		return mcp.NewToolResultErrorf("seats.aero %d: %s", apiErr.Status, apiErr.Body)
