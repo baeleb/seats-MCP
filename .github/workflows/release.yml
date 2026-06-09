@@ -1,0 +1,34 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+      - run: go test ./... -race -cover
+
+      - name: Build all platforms
+        run: |
+          mkdir -p dist
+          for pair in darwin/arm64 darwin/amd64 linux/amd64 linux/arm64 windows/amd64; do
+            GOOS="${pair%/*}" GOARCH="${pair#*/}"
+            suffix=""
+            [ "$GOOS" = "windows" ] && suffix=".exe"
+            out="dist/seats-mcp_${GOOS}_${GOARCH}${suffix}"
+            GOOS="$GOOS" GOARCH="$GOARCH" go build -o "$out" .
+          done
+
+      - name: Checksums
+        run: cd dist && sha256sum * > checksums.txt
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

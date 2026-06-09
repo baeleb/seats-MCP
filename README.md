@@ -24,7 +24,25 @@ You need a seats.aero account with a **Pro** or **Commercial** plan.
 
 Rate limit: **1,000 requests/day** shared across all uses of the key.
 
-### 2. Build the server
+### 2. Get the binary
+
+**Option A — Download (recommended)**
+
+Go to [Releases](https://github.com/baeleb/seats-MCP/releases) and download the binary for your platform, then make it executable:
+
+```sh
+chmod +x seats-mcp_darwin_arm64
+```
+
+| Platform | File |
+|---|---|
+| macOS Apple Silicon | `seats-mcp_darwin_arm64` |
+| macOS Intel | `seats-mcp_darwin_amd64` |
+| Linux x86_64 | `seats-mcp_linux_amd64` |
+| Linux ARM | `seats-mcp_linux_arm64` |
+| Windows x86_64 | `seats-mcp_windows_amd64.exe` |
+
+**Option B — Build from source**
 
 ```sh
 git clone https://github.com/baeleb/seats-MCP.git
