@@ -115,8 +115,8 @@ type Trip struct {
 }
 
 type Coordinates struct {
-	Latitude  float64 `json:"Latitude"`
-	Longitude float64 `json:"Longitude"`
+	Latitude  float64 `json:"Lat"`
+	Longitude float64 `json:"Lon"`
 }
 
 type BookingLink struct {
