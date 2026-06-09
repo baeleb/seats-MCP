@@ -3,6 +3,9 @@
 /seats-mcp
 /seats-MCP
 
+# Local editor/project config
+.opencode/
+
 # Environment & secrets
 .env
 *.log
