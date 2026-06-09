@@ -104,6 +104,7 @@ type Trip struct {
 	MileageCost         int       `json:"MileageCost"`
 	TotalTaxes          int       `json:"TotalTaxes"`
 	TaxesCurrency       string    `json:"TaxesCurrency,omitempty"`
+	TaxesCurrencySymbol string    `json:"TaxesCurrencySymbol,omitempty"`
 	AllianceCost        int       `json:"AllianceCost,omitempty"`
 	FlightNumbers       string    `json:"FlightNumbers"`
 	Cabin               string    `json:"Cabin"`
@@ -141,12 +142,17 @@ type LiveTrip struct {
 	MileageCost          int       `json:"MileageCost"`
 	TotalTaxes           int       `json:"TotalTaxes"`
 	TaxesCurrency        string    `json:"TaxesCurrency,omitempty"`
+	TaxesCurrencySymbol  string    `json:"TaxesCurrencySymbol,omitempty"`
+	AllianceCost         int       `json:"AllianceCost,omitempty"`
+	RemainingSeats       int       `json:"RemainingSeats,omitempty"`
+	TotalDuration        int       `json:"TotalDuration,omitempty"`
 	Cabin                string    `json:"Cabin"`
 	Stops                int       `json:"Stops"`
 	Carriers             string    `json:"Carriers"`
 	FlightNumbers        string    `json:"FlightNumbers"`
 	DepartsAt            string    `json:"DepartsAt"`
 	ArrivesAt            string    `json:"ArrivesAt"`
+	Source               string    `json:"Source,omitempty"`
 	Filtered             bool      `json:"Filtered"`
 }
 

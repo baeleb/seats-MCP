@@ -14,7 +14,7 @@ func (c *Client) Trips(ctx context.Context, availabilityID string, includeFilter
 		q.Set("include_filtered", strconv.FormatBool(true))
 	}
 	out := &TripsResponse{}
-	if err := c.doJSON(ctx, "GET", "/trips/"+availabilityID, q, nil, out); err != nil {
+	if err := c.doJSON(ctx, "GET", "/trips/"+url.PathEscape(availabilityID), q, nil, out); err != nil {
 		return nil, err
 	}
 	return out, nil
