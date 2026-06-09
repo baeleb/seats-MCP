@@ -10,7 +10,7 @@ You need a seats.aero account with a **Pro** or **Commercial** plan.
 
 1. Sign up at [seats.aero](https://seats.aero) and subscribe to Pro.
 2. Go to [seats.aero/settings](https://seats.aero/settings) and open the **API** tab.
-3. Click **Generate API Key**. Copy the key — it is shown only once.
+3. Copy your API key. Keep this secret! 
 
 > **Note:** seats.aero may limit API key access by geographical location or other criteria at their sole discretion. Pro keys are for **non-commercial use only**; commercial use requires a written agreement with seats.aero.
 
