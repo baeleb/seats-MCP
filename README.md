@@ -1,6 +1,14 @@
 # seats-MCP
 
-A [Model Context Protocol](https://modelcontextprotocol.io) server for the [seats.aero Partner API](https://developers.seats.aero/reference/getting-started-p). Exposes award flight availability as MCP tools so AI coding agents can search redemption availability across major airline mileage programs.
+> Your coding agent now has frequent flyer status.
+
+Ask your AI to find award flights — right from the terminal, inside your editor, or mid-refactor. seats-MCP connects AI coding agents to the [seats.aero Partner API](https://developers.seats.aero/reference/getting-started-p), giving them instant access to award availability across 20+ airline mileage programs.
+
+**Example:** "Find me a business class seat from LAX to Tokyo on June 15th."
+
+Your agent searches Aeroplan, United, Delta, Alaska, Emirates, and more — all in one call — and comes back with mileage costs, seat counts, airlines, and dates. No browser tabs. No point-and-click calendar hunting. Just ask.
+
+Built on the [Model Context Protocol](https://modelcontextprotocol.io). stdio transport.
 
 ## Quickstart
 
