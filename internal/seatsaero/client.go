@@ -23,13 +23,17 @@ type Client struct {
 }
 
 func New(apiKey string, httpClient *http.Client) *Client {
+	return NewWithBase(apiKey, httpClient, BaseURL)
+}
+
+func NewWithBase(apiKey string, httpClient *http.Client, baseURL string) *Client {
 	if httpClient == nil {
 		httpClient = &http.Client{Timeout: 30 * time.Second}
 	}
 	return &Client{
 		apiKey: apiKey,
 		http:   httpClient,
-		base:   BaseURL,
+		base:   baseURL,
 	}
 }
 
