@@ -8,6 +8,7 @@ import (
 
 	"github.com/calebhro/seats-MCP/internal/mcptools"
 	"github.com/calebhro/seats-MCP/internal/seatsaero"
+	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -17,6 +18,8 @@ const (
 )
 
 func main() {
+	godotenv.Load()
+
 	apiKey := os.Getenv("SEATS_AERO_API_KEY")
 	if apiKey == "" {
 		fmt.Fprintln(os.Stderr, "SEATS_AERO_API_KEY is required")
