@@ -23,10 +23,14 @@ Use the standard `testing` package. Mock HTTP calls with `httptest.NewServer`. T
 ## Architecture
 
 ```
-main.go                        Entry point — reads env, wires up HTTP client → seats.aero client → MCP server
+main.go                        Entry point — wires up auth → seats.aero client → MCP server (default), or dispatches `auth` subcommand
+auth.go                        `auth login|status|logout` CLI: OAuth2 consent flow (loopback callback / paste fallback), env→config, token store
 internal/
   seatsaero/                   Typed API client for seats.aero Partner API
-    client.go                  HTTP client core: doJSON() handles auth, errors, JSON encoding
+    client.go                  HTTP client core: doJSON() applies an Authorizer, handles errors, JSON encoding
+    auth.go                    Authorizer interface; APIKeyAuthorizer (Partner-Authorization) + OAuthAuthorizer (Bearer); ResolveAuthorizer (prefers OAuth)
+    oauth.go                   OAuthConfig, Token, TokenSource (caching/refresh/code-exchange), AuthCodeURL, UserInfo
+    oauthstore.go              TokenStore interface; FileTokenStore (0600, atomic) + MemoryTokenStore; DefaultTokenPath
     types.go                   All data types: Availability, Trip, Segment, SearchResponse, etc.
     search.go                  GET /search — cached multi-program search
     availability.go            GET /availability — single-program bulk fetch
@@ -42,6 +46,8 @@ internal/
 ```
 
 **Flow:** `main.go` → `mcptools.Register(s, client)` → each tool handler calls `seatsaero.Client` methods → `doJSON()` → seats.aero Partner API.
+
+**Auth flow:** `main.go` builds an OAuth `TokenSource` if `SEATS_OAUTH_*` creds + a saved token exist, then `ResolveAuthorizer` picks OAuth over the API key. `doJSON` calls `Authorizer.Apply` per request — `OAuthAuthorizer` lazily refreshes the access token via the `TokenSource`. `auth login` runs the one-time authorization-code consent flow and persists tokens through a `FileTokenStore`.
 
 ## Conventions
 
@@ -60,7 +66,8 @@ internal/
 
 ## seats.aero API quick reference
 
-- **Auth:** `Partner-Authorization` header with the API key.
+- **Auth:** `Partner-Authorization` header with the API key, **or** OAuth2 `Authorization: Bearer <token>`.
+- **OAuth2 base URL:** `https://seats.aero/oauth2` — `GET /consent` (response_type=code, client_id, redirect_uri, state, scope=openid), `POST /token` (JSON body; `authorization_code` + `refresh_token` grants), `GET /userinfo` (Bearer). Scope must be exactly `openid`. Redirect URIs are pre-registered.
 - **Base URL:** `https://seats.aero/partnerapi`
 - **Cabin codes:** `Y` = economy, `W` = premium economy, `J` = business, `F` = first.
 - **Pagination:** prefer `cursor` over `skip` to avoid duplicates.
