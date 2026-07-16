@@ -18,10 +18,13 @@ const maxErrorBodySnippet = 2048
 
 type Client struct {
 	apiKey string
+	auth   Authorizer
 	http   *http.Client
 	base   string
 }
 
+// New builds a Client that authenticates with a static Partner API key via the
+// Partner-Authorization header.
 func New(apiKey string, httpClient *http.Client) *Client {
 	return NewWithBase(apiKey, httpClient, BaseURL)
 }
@@ -32,8 +35,26 @@ func NewWithBase(apiKey string, httpClient *http.Client, baseURL string) *Client
 	}
 	return &Client{
 		apiKey: apiKey,
+		auth:   APIKeyAuthorizer{Key: apiKey},
 		http:   httpClient,
 		base:   baseURL,
+	}
+}
+
+// NewWithAuthorizer builds a Client that authenticates using the given
+// Authorizer (e.g. OAuthAuthorizer for bearer-token auth).
+func NewWithAuthorizer(auth Authorizer, httpClient *http.Client) *Client {
+	return NewWithAuthorizerBase(auth, httpClient, BaseURL)
+}
+
+func NewWithAuthorizerBase(auth Authorizer, httpClient *http.Client, baseURL string) *Client {
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 30 * time.Second}
+	}
+	return &Client{
+		auth: auth,
+		http: httpClient,
+		base: baseURL,
 	}
 }
 
@@ -59,7 +80,9 @@ func (c *Client) doJSON(ctx context.Context, method, path string, query url.Valu
 	if err != nil {
 		return fmt.Errorf("build request: %w", err)
 	}
-	req.Header.Set("Partner-Authorization", c.apiKey)
+	if err := c.applyAuth(ctx, req); err != nil {
+		return err
+	}
 	req.Header.Set("Accept", "application/json")
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
@@ -83,5 +106,16 @@ func (c *Client) doJSON(ctx context.Context, method, path string, query url.Valu
 	if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
 		return fmt.Errorf("decode response: %w", err)
 	}
+	return nil
+}
+
+// applyAuth attaches authentication to req. It prefers the configured
+// Authorizer; if none is set it falls back to the Partner-Authorization header
+// built from apiKey (preserving the zero-value Client behavior used in tests).
+func (c *Client) applyAuth(ctx context.Context, req *http.Request) error {
+	if c.auth != nil {
+		return c.auth.Apply(ctx, req)
+	}
+	req.Header.Set("Partner-Authorization", c.apiKey)
 	return nil
 }

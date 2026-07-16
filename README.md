@@ -72,6 +72,39 @@ Then restart your shell or run `source ~/.zshrc`.
 SEATS_AERO_API_KEY="your-key" ./bin/seats-mcp
 ```
 
+### 3b. (Alternative) Authenticate with OAuth2
+
+Instead of a static API key, the server can connect a user's seats.aero Pro account via OAuth2 — useful for consumer-facing integrations. The server **prefers OAuth** when OAuth credentials and a saved token are present, and otherwise falls back to the API key, so the two can coexist.
+
+1. Register an application at [seats.aero](https://seats.aero) to obtain a **client ID** and **client secret**. seats.aero requires the **redirect URI to be a public HTTPS URL** (loopback `http://localhost` URIs are not accepted), and it must share a domain with the Website URL you register. Any HTTPS page that simply loads works — e.g. your project's GitHub repo or a GitHub Pages site — because you complete the flow by pasting the redirected URL back into the CLI; the page itself doesn't need to handle the code.
+
+2. Set the OAuth environment variables. `SEATS_OAUTH_REDIRECT_URI` must match the registered URI character-for-character:
+
+   ```sh
+   export SEATS_OAUTH_CLIENT_ID="your-client-id"
+   export SEATS_OAUTH_CLIENT_SECRET="your-client-secret"
+   export SEATS_OAUTH_REDIRECT_URI="https://github.com/you/your-repo"
+   ```
+
+3. Run the consent flow once:
+
+   ```sh
+   ./bin/seats-mcp auth login
+   ```
+
+   This prints (and opens) the consent URL. After you authorize, seats.aero redirects your browser to your HTTPS redirect URI with `?code=…&state=…` appended. Copy the **full URL from the address bar** and paste it at the prompt — the server extracts the code, exchanges it, and saves the tokens. (You can paste just the `code` value instead if you prefer. Set `SEATS_MCP_NO_BROWSER=1` to skip auto-opening the browser on headless machines.)
+
+   Tokens are stored at `<user-config-dir>/seats-mcp/token.json` (override with `SEATS_OAUTH_TOKEN_FILE`). The server refreshes the access token automatically as it expires.
+
+   ```sh
+   ./bin/seats-mcp auth status    # show the stored token + signed-in user
+   ./bin/seats-mcp auth logout     # delete the stored token
+   ```
+
+The OAuth access token is sent as `Authorization: Bearer <token>` on every Partner API request.
+
+> **Loopback callback (optional):** if seats.aero ever permits an `http://localhost:PORT/callback` redirect URI for your app, `auth login` will instead spin up a temporary local listener and capture the redirect automatically — no pasting needed. The CLI picks this path on its own when the redirect URI is a loopback address.
+
 ### 4. Add to your MCP client
 
 #### OpenCode

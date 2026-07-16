@@ -20,20 +20,57 @@ const (
 func main() {
 	godotenv.Load()
 
-	apiKey := os.Getenv("SEATS_AERO_API_KEY")
-	if apiKey == "" {
-		fmt.Fprintln(os.Stderr, "SEATS_AERO_API_KEY is required")
-		os.Exit(1)
+	// Subcommands: `auth ...` manages OAuth credentials; no args runs the
+	// MCP server (the default, since MCP clients launch the binary directly).
+	args := os.Args[1:]
+	if len(args) > 0 && args[0] == "auth" {
+		if err := runAuth(args[1:]); err != nil {
+			fmt.Fprintf(os.Stderr, "auth: %v\n", err)
+			os.Exit(1)
+		}
+		return
 	}
 
+	if err := runServer(); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+}
+
+func runServer() error {
 	httpClient := &http.Client{Timeout: 30 * time.Second}
-	client := seatsaero.New(apiKey, httpClient)
+
+	// Build an OAuth TokenSource if credentials are configured and a token has
+	// been saved. ResolveAuthorizer then prefers OAuth over the API key.
+	var ts *seatsaero.TokenSource
+	cfg := oauthConfigFromEnv()
+	if cfg.Complete() {
+		store, err := tokenStore()
+		if err != nil {
+			return fmt.Errorf("oauth token store: %w", err)
+		}
+		tok, err := store.Load()
+		if err != nil {
+			return fmt.Errorf("load oauth token: %w", err)
+		}
+		if tok != nil {
+			ts = seatsaero.NewTokenSource(cfg, tok, store, httpClient)
+		}
+	}
+
+	auth, mode, err := seatsaero.ResolveAuthorizer(os.Getenv("SEATS_AERO_API_KEY"), ts)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "seats-aero: authenticating via %s\n", mode)
+
+	client := seatsaero.NewWithAuthorizer(auth, httpClient)
 
 	s := server.NewMCPServer(serverName, serverVersion)
 	mcptools.Register(s, client)
 
 	if err := server.ServeStdio(s); err != nil {
-		fmt.Fprintf(os.Stderr, "server error: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("server error: %w", err)
 	}
+	return nil
 }
