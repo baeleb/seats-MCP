@@ -14,7 +14,7 @@ func registerSearch(s *server.MCPServer, c *seatsaero.Client) {
 		mcp.WithDescription(
 			"Search cached award availability across mileage programs (seats.aero GET /search). "+
 				"Returns Availability summaries for one or more origin/destination pairs over a date range. "+
-				"Use this for fast multi-program searches; pair with get_trips to fetch flight-level detail.",
+				"Use this for fast multi-program searches. For booking links and flight-level detail, call get_trips on a result's ID.",
 		),
 		mcp.WithString("origin_airport", mcp.Required(),
 			mcp.Description("Origin IATA airport code(s). Comma-delimited for multiple, e.g. \"SFO,LAX\".")),

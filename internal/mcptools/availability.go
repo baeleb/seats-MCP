@@ -13,7 +13,7 @@ func registerBulkAvailability(s *server.MCPServer, c *seatsaero.Client) {
 		mcp.WithReadOnlyHintAnnotation(true),
 		mcp.WithDescription(
 			"Bulk-fetch Availability objects for a single mileage program (seats.aero GET /availability). "+
-				"Use this for Explore-style queries over a region or date range. Returns large result sets paginated by cursor.",
+				"Use this for Explore-style queries over a region or date range. Returns large result sets paginated by cursor. For booking links and flight-level detail, call get_trips on a result's ID.",
 		),
 		mcp.WithString("source", mcp.Required(),
 			mcp.Description("Mileage program key, e.g. \"aeroplan\", \"united\", \"delta\".")),
