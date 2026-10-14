@@ -202,7 +202,7 @@ Hotels (rooms.aero):
 - Not all mileage programs report seat counts or trip-level data — treat capability gaps as expected.
 - The server logs only to stderr (stdout is the MCP transport).
 
-See [`CLAUDE.md`](./CLAUDE.md) for the full API surface reference.
+See [`AGENTS.md`](./AGENTS.md) for the full API surface reference. (A [`CLAUDE.md`](./CLAUDE.md) symlink is kept for Claude Code, which reads that name.)
 
 ## License
 
