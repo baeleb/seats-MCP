@@ -28,7 +28,7 @@ func TestOAuthAuthorizer(t *testing.T) {
 	if err := (OAuthAuthorizer{Source: ts}).Apply(context.Background(), req); err != nil {
 		t.Fatal(err)
 	}
-	if got := req.Header.Get("Authorization"); got != "Bearer tok123" {
+	if got := req.Header.Get("Partner-Authorization"); got != "Bearer tok123" {
 		t.Errorf("header = %q, want Bearer tok123", got)
 	}
 }
@@ -92,14 +92,15 @@ func TestResolveAuthorizer(t *testing.T) {
 }
 
 // TestClientUsesOAuthAuthorizer verifies the bearer token reaches the wire on a
-// real Partner API call routed through doJSON.
+// real Partner API call routed through doJSON, in the documented
+// Partner-Authorization header.
 func TestClientUsesOAuthAuthorizer(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Authorization") != "Bearer live-token" {
-			t.Errorf("authorization = %q", r.Header.Get("Authorization"))
+		if r.Header.Get("Partner-Authorization") != "Bearer live-token" {
+			t.Errorf("partner-authorization = %q", r.Header.Get("Partner-Authorization"))
 		}
-		if r.Header.Get("Partner-Authorization") != "" {
-			t.Errorf("unexpected Partner-Authorization header")
+		if r.Header.Get("Authorization") != "" {
+			t.Errorf("unexpected Authorization header")
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{"ok": "yes"})
