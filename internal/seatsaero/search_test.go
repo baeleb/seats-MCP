@@ -130,21 +130,21 @@ func TestSearch_AllOptionalParams(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 		checks := map[string]string{
-			"origin_airport":       "LAX,MSP",
-			"destination_airport":  "FRA,LHR",
-			"start_date":           "2026-07-01",
-			"end_date":             "2026-07-31",
-			"sources":              "aeroplan,united",
-			"cabins":               "business,first",
-			"carriers":             "DL,AA",
-			"order_by":             "lowest_mileage",
-			"only_direct_flights":  "true",
-			"include_trips":        "false",
-			"minify_trips":         "true",
-			"include_filtered":     "false",
-			"take":                 "100",
-			"skip":                 "200",
-			"cursor":               "12345",
+			"origin_airport":      "LAX,MSP",
+			"destination_airport": "FRA,LHR",
+			"start_date":          "2026-07-01",
+			"end_date":            "2026-07-31",
+			"sources":             "aeroplan,united",
+			"cabins":              "business,first",
+			"carriers":            "DL,AA",
+			"order_by":            "lowest_mileage",
+			"only_direct_flights": "true",
+			"include_trips":       "false",
+			"minify_trips":        "true",
+			"include_filtered":    "false",
+			"take":                "100",
+			"skip":                "200",
+			"cursor":              "12345",
 		}
 		for key, expected := range checks {
 			if q.Get(key) != expected {
