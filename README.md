@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="seats-MCP — your coding agent now has frequent flyer status" width="896">
+</p>
+
 # seats-MCP
 
 > Your coding agent now has frequent flyer status.
