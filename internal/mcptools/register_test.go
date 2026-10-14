@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/calebhro/seats-MCP/internal/seatsaero"
+	"github.com/baeleb/seats-MCP/internal/seatsaero"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 

@@ -34,8 +34,11 @@ func (a APIKeyAuthorizer) Apply(_ context.Context, req *http.Request) error {
 }
 
 // OAuthAuthorizer authenticates with an OAuth2 access token sent as
-// "Authorization: Bearer <token>". The token is fetched (and refreshed when
-// expired) from the wrapped TokenSource on every request.
+// "Partner-Authorization: Bearer <token>" — both Partner APIs document the
+// token in the Partner-Authorization header with a Bearer prefix. (The plain
+// Authorization header is only used by the OAuth2 /userinfo endpoint.) The
+// token is fetched (and refreshed when expired) from the wrapped TokenSource
+// on every request.
 type OAuthAuthorizer struct {
 	Source *TokenSource
 }
@@ -45,7 +48,7 @@ func (a OAuthAuthorizer) Apply(ctx context.Context, req *http.Request) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Authorization", "Bearer "+tok)
+	req.Header.Set("Partner-Authorization", "Bearer "+tok)
 	return nil
 }
 

@@ -8,6 +8,15 @@ import (
 	"time"
 )
 
+// loopbackClient returns an HTTP client that never reuses connections. These
+// tests spin up short-lived loopback servers and rely on the OS reusing a just
+// freed port; the default client's keep-alive pool could otherwise carry an
+// idle connection from an earlier test into the next one and deliver a request
+// before the test's own poll does.
+func loopbackClient() *http.Client {
+	return &http.Client{Transport: &http.Transport{DisableKeepAlives: true}}
+}
+
 // TestCaptureViaServer drives the loopback callback server: it starts the
 // listener, simulates the consent redirect with a GET, and checks the captured
 // code. SEATS_MCP_NO_BROWSER keeps the test from opening a real browser.
@@ -34,15 +43,28 @@ func TestCaptureViaServer(t *testing.T) {
 		done <- result{code, err}
 	}()
 
-	// Poll the callback until the server is up, then deliver the redirect.
+	// Deliver the redirect once the callback server is accepting connections.
+	// A client with keep-alives disabled keeps each attempt on a fresh
+	// connection so a leftover pooled connection can't race the poll.
+	client := loopbackClient()
+	callbackURL := "http://" + addr + "/callback?code=the-code&state=the-state"
 	deadline := time.Now().Add(3 * time.Second)
 	for time.Now().Before(deadline) {
 		select {
 		case res := <-done:
-			t.Fatalf("obtainCode returned early: code=%q err=%v", res.code, res.err)
+			// obtainCode finished before we delivered the redirect; validate
+			// whatever it produced (an error means the callback server never
+			// came up, e.g. the reserved port was taken).
+			if res.err != nil {
+				t.Fatalf("obtainCode: %v", res.err)
+			}
+			if res.code != "the-code" {
+				t.Errorf("code = %q, want the-code", res.code)
+			}
+			return
 		default:
 		}
-		resp, gerr := http.Get("http://" + addr + "/callback?code=the-code&state=the-state")
+		resp, gerr := client.Get(callbackURL)
 		if gerr == nil {
 			resp.Body.Close()
 			break
@@ -82,9 +104,10 @@ func TestCaptureViaServerStateMismatch(t *testing.T) {
 		done <- result{code, err}
 	}()
 
+	client := loopbackClient()
 	deadline := time.Now().Add(3 * time.Second)
 	for time.Now().Before(deadline) {
-		resp, err := http.Get("http://" + addr + "/callback?code=c&state=forged")
+		resp, err := client.Get("http://" + addr + "/callback?code=c&state=forged")
 		if err == nil {
 			resp.Body.Close()
 			break

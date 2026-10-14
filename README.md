@@ -2,7 +2,7 @@
 
 > Your coding agent now has frequent flyer status.
 
-Ask your AI to find award flights — right from the terminal, inside your editor, or mid-refactor. seats-MCP connects AI coding agents to the [seats.aero Partner API](https://developers.seats.aero/reference/getting-started-p), giving them instant access to award availability across 20+ airline mileage programs.
+Ask your AI to find award flights and hotel stays — right from the terminal, inside your editor, or mid-refactor. seats-MCP connects AI coding agents to the [seats.aero](https://developers.seats.aero/reference/getting-started-p) and [rooms.aero](https://developers.seats.aero/reference/rooms-getting-started) Partner APIs, giving them instant access to award availability across 20+ airline mileage programs and seven hotel loyalty programs (Hilton, Hyatt, IHG, Marriott, Choice, Wyndham and I Prefer).
 
 **Example:** "Find me a business class seat from LAX to Tokyo on June 15th."
 
@@ -101,7 +101,7 @@ Instead of a static API key, the server can connect a user's seats.aero Pro acco
    ./bin/seats-mcp auth logout     # delete the stored token
    ```
 
-The OAuth access token is sent as `Authorization: Bearer <token>` on every Partner API request.
+The OAuth access token is sent as `Partner-Authorization: Bearer <token>` on every Partner API request — the same header as an API key, prefixed with `Bearer`.
 
 > **Loopback callback (optional):** if seats.aero ever permits an `http://localhost:PORT/callback` redirect URI for your app, `auth login` will instead spin up a temporary local listener and capture the redirect automatically — no pasting needed. The CLI picks this path on its own when the redirect URI is a loopback address.
 
@@ -129,7 +129,7 @@ Add to `~/.config/opencode/opencode.jsonc`:
 
 Use an absolute path to the binary. The `{env:SEATS_AERO_API_KEY}` syntax pulls the value from your shell environment — no secret written to the config file.
 
-Restart OpenCode. The four tools below will appear under the `seats-aero_` prefix.
+Restart OpenCode. The tools below will appear under the `seats-aero_` prefix.
 
 #### Claude Desktop
 
@@ -173,6 +173,8 @@ SEATS_AERO_API_KEY="your-key" npx @modelcontextprotocol/inspector ./bin/seats-mc
 
 ## Tools
 
+Flights (seats.aero):
+
 | Tool | Endpoint | Use for |
 | --- | --- | --- |
 | `search_award_availability` | `GET /search` | Cached, multi-program search by route + date range. Fast. |
@@ -180,8 +182,20 @@ SEATS_AERO_API_KEY="your-key" npx @modelcontextprotocol/inspector ./bin/seats-mc
 | `get_trips` | `GET /trips/{id}` | Drill into a specific Availability for flight-level itineraries. |
 | `live_search` | `POST /live` | Real-time search for one route/date/program. Slower (5-15s). |
 
+Hotels (rooms.aero):
+
+| Tool | Endpoint | Use for |
+| --- | --- | --- |
+| `search_hotel_availability` | `GET /search` | Find hotels with award availability in an area + date range, cheapest first. |
+| `bulk_hotel_availability` | `GET /availability` | Every upcoming date with a rate for a program or a set of hotels. |
+| `get_hotel_availability_details` | `GET /availability/{id}` | Room types with points/cash prices and a booking link for one stay. |
+| `list_hotels` | `GET /hotels` | Browse the hotel directory by program, location, brand or name. |
+| `refresh_hotel` | `POST /hotels/{id}/refresh` | Request a fresh rate check (one per user every 24h). |
+| `list_hotel_alerts` | `GET /alerts` | List the price alerts on your rooms.aero account (read-only). |
+
 ## Notes
 
+- **Flights and hotels share the same credentials.** Your seats.aero API key (or OAuth token) authenticates both the seats.aero and rooms.aero APIs. rooms.aero keeps its own separate quota of 1,000 calls/day, so hotel calls never count against your seats.aero quota (or vice versa).
 - **Live search is not available to Pro users.** The `/live` endpoint requires a commercial agreement with seats.aero. If you are a Pro user, the `live_search` tool will return errors.
 - IDs returned by `live_search` are ephemeral and cannot be passed to `get_trips`.
 - Times in responses use the **local airport timezone**, not UTC.

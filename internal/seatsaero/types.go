@@ -75,44 +75,44 @@ type AvailabilityResponse struct {
 
 // Segment is a single flight leg within a Trip.
 type Segment struct {
-	ID                  string `json:"ID"`
-	RouteID             string `json:"RouteID"`
-	AvailabilityID      string `json:"AvailabilityID"`
-	AvailabilityTripID  string `json:"AvailabilityTripID"`
-	OriginAirport       string `json:"OriginAirport"`
-	DestinationAirport  string `json:"DestinationAirport"`
-	FlightNumber        string `json:"FlightNumber"`
-	Distance            int    `json:"Distance"`
-	FareClass           string `json:"FareClass"`
-	AircraftName        string `json:"AircraftName,omitempty"`
-	AircraftCode        string `json:"AircraftCode,omitempty"`
-	DepartsAt           string `json:"DepartsAt"`
-	ArrivesAt           string `json:"ArrivesAt"`
-	Order               int    `json:"Order"`
+	ID                 string `json:"ID"`
+	RouteID            string `json:"RouteID"`
+	AvailabilityID     string `json:"AvailabilityID"`
+	AvailabilityTripID string `json:"AvailabilityTripID"`
+	OriginAirport      string `json:"OriginAirport"`
+	DestinationAirport string `json:"DestinationAirport"`
+	FlightNumber       string `json:"FlightNumber"`
+	Distance           int    `json:"Distance"`
+	FareClass          string `json:"FareClass"`
+	AircraftName       string `json:"AircraftName,omitempty"`
+	AircraftCode       string `json:"AircraftCode,omitempty"`
+	DepartsAt          string `json:"DepartsAt"`
+	ArrivesAt          string `json:"ArrivesAt"`
+	Order              int    `json:"Order"`
 }
 
 // Trip is a specific itinerary derived from an Availability.
 type Trip struct {
-	ID                  string    `json:"ID"`
-	RouteID             string    `json:"RouteID"`
-	AvailabilityID      string    `json:"AvailabilityID"`
+	ID                   string    `json:"ID"`
+	RouteID              string    `json:"RouteID"`
+	AvailabilityID       string    `json:"AvailabilityID"`
 	AvailabilitySegments []Segment `json:"AvailabilitySegments"`
-	TotalDuration       int       `json:"TotalDuration"`
-	Stops               int       `json:"Stops"`
-	Carriers            string    `json:"Carriers"`
-	RemainingSeats      int       `json:"RemainingSeats"`
-	MileageCost         int       `json:"MileageCost"`
-	TotalTaxes          int       `json:"TotalTaxes"`
-	TaxesCurrency       string    `json:"TaxesCurrency,omitempty"`
-	TaxesCurrencySymbol string    `json:"TaxesCurrencySymbol,omitempty"`
-	AllianceCost        int       `json:"AllianceCost,omitempty"`
-	FlightNumbers       string    `json:"FlightNumbers"`
-	Cabin               string    `json:"Cabin"`
-	DepartsAt           string    `json:"DepartsAt"`
-	ArrivesAt           string    `json:"ArrivesAt"`
-	CreatedAt           string    `json:"CreatedAt"`
-	UpdatedAt           string    `json:"UpdatedAt"`
-	Source              string    `json:"Source"`
+	TotalDuration        int       `json:"TotalDuration"`
+	Stops                int       `json:"Stops"`
+	Carriers             string    `json:"Carriers"`
+	RemainingSeats       int       `json:"RemainingSeats"`
+	MileageCost          int       `json:"MileageCost"`
+	TotalTaxes           int       `json:"TotalTaxes"`
+	TaxesCurrency        string    `json:"TaxesCurrency,omitempty"`
+	TaxesCurrencySymbol  string    `json:"TaxesCurrencySymbol,omitempty"`
+	AllianceCost         int       `json:"AllianceCost,omitempty"`
+	FlightNumbers        string    `json:"FlightNumbers"`
+	Cabin                string    `json:"Cabin"`
+	DepartsAt            string    `json:"DepartsAt"`
+	ArrivesAt            string    `json:"ArrivesAt"`
+	CreatedAt            string    `json:"CreatedAt"`
+	UpdatedAt            string    `json:"UpdatedAt"`
+	Source               string    `json:"Source"`
 }
 
 type Coordinates struct {
@@ -128,10 +128,10 @@ type BookingLink struct {
 
 // TripsResponse is the envelope returned by GET /trips/{id}.
 type TripsResponse struct {
-	Data                 []Trip       `json:"data"`
-	OriginCoordinates    Coordinates  `json:"origin_coordinates"`
-	DestinationCoordinates Coordinates `json:"destination_coordinates"`
-	BookingLinks         []BookingLink `json:"booking_links"`
+	Data                   []Trip        `json:"data"`
+	OriginCoordinates      Coordinates   `json:"origin_coordinates"`
+	DestinationCoordinates Coordinates   `json:"destination_coordinates"`
+	BookingLinks           []BookingLink `json:"booking_links"`
 }
 
 // LiveTrip is a trip returned by POST /live. IDs here are ephemeral and cannot

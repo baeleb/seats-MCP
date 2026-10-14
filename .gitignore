@@ -5,6 +5,9 @@
 
 # Local editor/project config
 .opencode/
+.omo/
+.omc/
+.commandcode/
 
 # Environment & secrets
 .env
