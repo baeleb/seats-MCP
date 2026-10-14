@@ -9,6 +9,7 @@
 .omc/
 .commandcode/
 .claude/
+.zcodeignore
 
 # Environment & secrets
 .env
