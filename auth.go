@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/calebhro/seats-MCP/internal/seatsaero"
+	"github.com/baeleb/seats-MCP/internal/seatsaero"
 )
 
 // loginTimeout bounds how long `auth login` waits for the consent redirect.

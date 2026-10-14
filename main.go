@@ -6,8 +6,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/calebhro/seats-MCP/internal/mcptools"
-	"github.com/calebhro/seats-MCP/internal/seatsaero"
+	"github.com/baeleb/seats-MCP/internal/mcptools"
+	"github.com/baeleb/seats-MCP/internal/roomsaero"
+	"github.com/baeleb/seats-MCP/internal/seatsaero"
 	"github.com/joho/godotenv"
 	"github.com/mark3labs/mcp-go/server"
 )
@@ -66,8 +67,13 @@ func runServer() error {
 
 	client := seatsaero.NewWithAuthorizer(auth, httpClient)
 
+	// rooms.aero accepts the same credentials, so it shares the resolved
+	// Authorizer (API key or OAuth token).
+	roomsClient := roomsaero.NewWithAuthorizer(auth, httpClient)
+
 	s := server.NewMCPServer(serverName, serverVersion)
 	mcptools.Register(s, client)
+	mcptools.RegisterRooms(s, roomsClient)
 
 	if err := server.ServeStdio(s); err != nil {
 		return fmt.Errorf("server error: %w", err)

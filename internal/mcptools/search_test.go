@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/calebhro/seats-MCP/internal/seatsaero"
+	"github.com/baeleb/seats-MCP/internal/seatsaero"
 	"github.com/mark3labs/mcp-go/server"
 )
 
@@ -103,21 +103,21 @@ func TestSearchTool_OptionalParams(t *testing.T) {
 	registerSearch(s, c)
 
 	resp := callTool(t, s, "search_award_availability", map[string]any{
-		"origin_airport":       "LAX",
-		"destination_airport":  "NRT",
-		"start_date":           "2026-07-01",
-		"end_date":             "2026-07-31",
-		"sources":              "aeroplan,united",
-		"cabins":               "business,first",
-		"carriers":             "DL,AA",
-		"order_by":             "lowest_mileage",
-		"only_direct_flights":  true,
-		"include_trips":        false,
-		"minify_trips":         true,
-		"include_filtered":     false,
-		"take":                 float64(100),
-		"skip":                 float64(200),
-		"cursor":               float64(12345),
+		"origin_airport":      "LAX",
+		"destination_airport": "NRT",
+		"start_date":          "2026-07-01",
+		"end_date":            "2026-07-31",
+		"sources":             "aeroplan,united",
+		"cabins":              "business,first",
+		"carriers":            "DL,AA",
+		"order_by":            "lowest_mileage",
+		"only_direct_flights": true,
+		"include_trips":       false,
+		"minify_trips":        true,
+		"include_filtered":    false,
+		"take":                float64(100),
+		"skip":                float64(200),
+		"cursor":              float64(12345),
 	})
 	checkToolSuccess(t, resp)
 }

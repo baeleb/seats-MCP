@@ -1,4 +1,4 @@
-module github.com/calebhro/seats-MCP
+module github.com/baeleb/seats-MCP
 
 go 1.26.4
 
